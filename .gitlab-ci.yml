@@ -26,6 +26,7 @@ stages:
 build:
   stage: test
   script:
+    - curl elasticsearch:9200
     - mvn clean install
   artifacts:
     paths:
