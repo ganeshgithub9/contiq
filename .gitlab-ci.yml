@@ -9,7 +9,7 @@ variables:
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   MAVEN_OPTS: "-DskipTests=false"
   ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-  discovery.type: single-node
+  discovery.type: "single-node"
   xpack.security.enabled: "false"
   SPRING_DATA_ELASTICSEARCH_CLIENT_REACTIVE_ENDPOINTS: "elasticsearch:9200"
 
