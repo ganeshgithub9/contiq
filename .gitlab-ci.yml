@@ -1,9 +1,20 @@
 image: maven:3-eclipse-temurin-17
 
+services:
+  - name: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    alias: elasticsearch
+
 variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
   MAVEN_OPTS: "-DskipTests=false"
+  ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+  discovery.type: single-node
+  xpack.security.enabled: "false"
+  SPRING_DATA_ELASTICSEARCH_CLIENT_REACTIVE_ENDPOINTS: "elasticsearch:9200"
+
+  # Or override spring properties directly if needed
+  SPRING_DATA_ELASTICSEARCH_CLIENT_REST_URIS: "http://elasticsearch:9200"
 
 stages:
   - test
