@@ -1,32 +1,41 @@
-File
-id
-name
-author
-publishedBy
-uploadedAt
-modifiedAt
-type(ppt,doc,png)
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table file {
+  id integer [primary key]
+  name varchar
+  fileBLOB blob
+  author varchar
+  published_by varchar
+  uploaded_at timestamp
+  modified_at timestamp
+  belongs_to_user_id integer
+  type varchar
+}
+
+Table user {
+  id integer [primary key]
+  name varchar
+  email_id varchar
+  password varchar
+
+  auth0_id varchar
+  role string
+  last_login timestamp
+  created_at timestamp
+  updated_at timestamp
+
+}
+
+Table paragraph {
+  id integer [primary key]
+  file_id integer
+  page_number integer
+  paragraph_no_of_that_page integer
+  text text
+}
 
 
+Ref: user.id < file.belongs_to_user_id
 
-User
-id
-name
-EmailID
-password
-
-
-
-
-
-User 1: m File
-
-A user can upload multiple files at a time. (we can make use of MultipartFile[] to handle it)
-
-search should happen irrespective of file type
-
-when searched and clicked on a doc, it should give the response for each doc as[{
-fileName,
-total keyword matches,
-[{slide or page number, [paragraph text]}...]
-}...]
+Ref: file.id < paragraph.file_id
