@@ -1,5 +1,6 @@
 package com.ganesh.contiq.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,11 +9,11 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "customers")
-public class Customer {
-
+@Document(indexName = "file")
+public class File {
     @Id
-    private Long id;
-    private String firstName,lastName;
-    private int age;
+    String id;
+    String name;
+    String content;
+    String userId;
 }
