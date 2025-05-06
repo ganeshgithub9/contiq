@@ -11,7 +11,7 @@ import java.util.List;
 public interface FileService {
     void saveFiles(List<MultipartFile> files, String userId) throws IOException;
 
-    String getFileContentById(String fileId,String userId) throws IOException, FileNotFoundException, FileAccessDeniedException;
+    String getFileContentById(String fileId,String userId) throws FileNotFoundException, FileAccessDeniedException;
 
     List<FileMetaDataDTO> getFilesByUserId(String userId);
 

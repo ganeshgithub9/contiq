@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@Primary
 public class CustomPdfProcessingService implements PdfProcessingService {
 
     public List<Paragraph> processPdf(MultipartFile file) throws IOException {

@@ -56,7 +56,7 @@ public class CustomFileService implements FileService{
     }
 
     @Override
-    public String getFileContentById(String fileId,String userId) throws IOException, FileNotFoundException, FileAccessDeniedException {
+    public String getFileContentById(String fileId,String userId) throws FileNotFoundException, FileAccessDeniedException {
 
         return fileRepository.findContentById(fileId,userId);
     }

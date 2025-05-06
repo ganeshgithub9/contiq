@@ -15,6 +15,7 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
 import java.util.List;
 
+
 public class ParagraphRepositoryImpl implements ParagraphRepositoryCustom{
 
     @Autowired

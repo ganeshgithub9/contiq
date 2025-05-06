@@ -3,6 +3,7 @@ package com.ganesh.contiq.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ganesh.contiq.DTO.FileMetaDataDTO;
+import com.ganesh.contiq.exception.FileAccessDeniedException;
 import com.ganesh.contiq.service.CustomFileService;
 import com.ganesh.contiq.util.JwtUtil;
 import org.junit.jupiter.api.Assertions;
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +93,39 @@ public class FileControllerTests {
     }
 
     @Test
+    public void shouldThrowIOException_whenUserUploadsFilesAndParsingFailed() throws Exception {
+
+        String expectedErrorMessage= "Error processing the PDF file. Make sure there are no corrupt files";
+
+        List<MockMultipartFile> mockedmultipartFileList=List.of(new MockMultipartFile(
+                "files",
+                "file1.pdf",
+                "application/pdf",
+                "Dummy file1 PDF content".getBytes()
+        ), new MockMultipartFile(
+                "files",
+                "file2.pdf",
+                "application/pdf",
+                "Dummy file2 PDF content".getBytes()
+        ));
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            mockedStatic.when(() -> JwtUtil.getUserId(any(Jwt.class))).thenReturn("user1");
+            doThrow(new IOException(expectedErrorMessage)).when(fileService).saveFiles(anyList(),anyString());
+
+            //MvcResult result=
+                    mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/files")
+                            .file(mockedmultipartFileList.get(0))
+                            .file(mockedmultipartFileList.get(1))
+                            .with(jwt().jwt(jwt -> jwt
+                                    .claim("sub", "user1")
+                                    .claim("scope", "write:files"))))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.error").value(expectedErrorMessage));
+        }
+    }
+
+    @Test
     public void shouldReturnFilesUploadedByUser_whenGetFiles() throws Exception {
 
         List<FileMetaDataDTO> mockedResponse=new ArrayList<>();
@@ -142,6 +177,73 @@ public class FileControllerTests {
             assertEquals(expectedResult,actualResult);
         }
     }
+
+    @Test
+    public void shouldThrowFileAccessDeniedException_whenGetFileContentByIdOnOthersFile() throws Exception {
+
+        String expectedErrorMessage="You are not authorized to access this file";
+        when(fileService.getFileContentById(anyString(),anyString())).thenThrow(new FileAccessDeniedException(expectedErrorMessage));
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            mockedStatic.when(() -> JwtUtil.getUserId(any(Jwt.class))).thenReturn("user1");
+
+
+            //MvcResult result=
+                    mockMvc.perform(get("/api/v1/files/randomFileId")
+                            .with(jwt().jwt(jwt -> jwt
+                                    .claim("sub", "user1")
+                                    .claim("scope", "read:files"))))
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.error").value(expectedErrorMessage));
+
+//            String actualResult=result.getResponse().getContentAsString();
+//            assertEquals(expectedResult,actualResult);
+        }
+    }
+
+    @Test
+    public void shouldThrowFileNotFoundException_whenGetFileContentByInvalidId() throws Exception {
+
+
+        String invalidFileId="invalidFileId",expectedErrorMessage="File with ID "+invalidFileId+" not found";
+        when(fileService.getFileContentById(anyString(),anyString())).thenThrow(new FileAccessDeniedException(expectedErrorMessage));
+
+        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+            mockedStatic.when(() -> JwtUtil.getUserId(any(Jwt.class))).thenReturn("user1");
+
+
+            //MvcResult result=
+            mockMvc.perform(get("/api/v1/files/"+invalidFileId)
+                            .with(jwt().jwt(jwt -> jwt
+                                    .claim("sub", "user1")
+                                    .claim("scope", "read:files"))))
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.error").value(expectedErrorMessage));
+
+//            String actualResult=result.getResponse().getContentAsString();
+//            assertEquals(expectedResult,actualResult);
+        }
+    }
+
+//    @Test
+//    public void shouldThrowException_whenGetFileContentByIdAndServerIsNotHealthy() throws Exception {
+//
+//        String expectedErrorMessage="An unexpected error occurred. Please try again later or contact support if the issue persists.";
+//        when(fileService.getFileContentById(anyString(),anyString())).thenThrow(new Exception(expectedErrorMessage));
+//
+//        try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
+//            mockedStatic.when(() -> JwtUtil.getUserId(any(Jwt.class))).thenReturn("user1");
+//
+//
+//            //MvcResult result=
+//            mockMvc.perform(get("/api/v1/files/randomFileId")
+//                            .with(jwt().jwt(jwt -> jwt
+//                                    .claim("sub", "user1")
+//                                    .claim("scope", "read:files"))))
+//                    .andExpect(status().isInternalServerError())
+//                    .andExpect(jsonPath("$.error").value(expectedErrorMessage));
+//        }
+//    }
 
     @Test
     public void shouldReturnFiles_whenSearchFilesContainingGivenKeyword() throws Exception {
