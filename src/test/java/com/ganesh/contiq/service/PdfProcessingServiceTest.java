@@ -71,6 +71,30 @@ public class PdfProcessingServiceTest {
 
 
     @Test
+    public void shouldThrowIOException_whenExtractTextFromPdf() throws IOException {
+
+        PDDocument document= mock(PDDocument.class);
+        MultipartFile multipartFile=new MockMultipartFile(
+                "files",
+                "file1.pdf",
+                "application/pdf",
+                "Dummy file1 PDF content".getBytes()
+        );
+        PDFTextStripper mockStripper = mock(PDFTextStripper.class);
+
+        try (MockedStatic<PDDocument> mockedStatic = mockStatic(PDDocument.class)) {
+
+            mockedStatic.when(() -> PDDocument.load(any(InputStream.class))).thenThrow(new IOException("Failed to extract text from PDF"));
+            when(mockStripper.getText(any(PDDocument.class))).thenReturn("File content");
+            doReturn(mockStripper).when(pdfProcessingService).createPdfTextStripper();
+
+            assertThrows(IOException.class,()->pdfProcessingService.extractTextFromPdf(multipartFile));
+
+        }
+    }
+
+
+    @Test
     public void shouldReturnAListOfParagraphs_whenProcessPdf() throws IOException {
 
         PDDocument document= mock(PDDocument.class);
@@ -94,6 +118,30 @@ public class PdfProcessingServiceTest {
             assertEquals(2,paragraphList.size());
             assert(paragraphList.get(0).getContent().equals("File content paragraph 1"));
             assert(paragraphList.get(1).getContent().equals("File content paragraph 2"));
+        }
+    }
+
+    @Test
+    public void shouldThrowIOException_whenProcessPdf() throws IOException {
+
+        PDDocument document= mock(PDDocument.class);
+        MultipartFile multipartFile=new MockMultipartFile(
+                "files",
+                "file1.pdf",
+                "application/pdf",
+                "Dummy file1 PDF content".getBytes()
+        );
+        PDFTextStripper mockStripper = mock(PDFTextStripper.class);
+
+        try (MockedStatic<PDDocument> mockedStatic = mockStatic(PDDocument.class)) {
+
+            mockedStatic.when(() -> PDDocument.load(any(InputStream.class))).thenThrow(new IOException("Error processing the PDF file. Make sure there are no corrupt files"));
+            when(mockStripper.getText(any(PDDocument.class))).thenReturn("File content paragraph 1\n\nFile content paragraph 2");
+            doReturn(mockStripper).when(pdfProcessingService).createPdfTextStripper();
+            when(document.getNumberOfPages()).thenReturn(1);
+
+            assertThrows(IOException.class,()->pdfProcessingService.processPdf(multipartFile));
+
         }
     }
 

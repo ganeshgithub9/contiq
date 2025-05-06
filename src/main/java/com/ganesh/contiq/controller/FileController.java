@@ -53,7 +53,7 @@ public class FileController {
     }
 
     @GetMapping("/files/{file-id}")
-    public ResponseEntity<String> getFileContentById( @PathVariable("file-id") String fileId, @AuthenticationPrincipal Jwt jwt) throws IOException, FileAccessDeniedException, FileNotFoundException {
+    public ResponseEntity<String> getFileContentById( @PathVariable("file-id") String fileId, @AuthenticationPrincipal Jwt jwt) throws FileAccessDeniedException, FileNotFoundException {
         String userId= JwtUtil.getUserId(jwt);
         return new ResponseEntity<>(fileService.getFileContentById(fileId,userId), HttpStatus.OK);
     }
