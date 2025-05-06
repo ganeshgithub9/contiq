@@ -56,6 +56,10 @@ public class FileServiceTest {
     }
 
     @Test
+    void contextLoads() {
+    }
+
+    @Test
     public void shouldSaveFiles_whenSaveFilesByUser() throws Exception {
 
         MultipartFile file1=new MockMultipartFile(
