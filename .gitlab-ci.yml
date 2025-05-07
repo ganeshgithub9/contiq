@@ -27,6 +27,7 @@ build:
   stage: test
   script:
 #    - until curl -s elasticsearch:9200 | grep -q "You Know, for Search"; do echo "Waiting for Elasticsearch..."; sleep 5; done
+    - curl elasticsearch:9200
     - mvn clean install
   artifacts:
     paths:

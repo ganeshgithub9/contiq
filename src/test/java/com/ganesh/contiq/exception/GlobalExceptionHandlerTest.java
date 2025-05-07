@@ -9,11 +9,11 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+//@SpringBootTest
 public class GlobalExceptionHandlerTest {
 
-    @Autowired
-    GlobalExceptionHandler globalExceptionHandler;
+
+    GlobalExceptionHandler globalExceptionHandler=new GlobalExceptionHandler();
 
     @Test
     public void shouldReturnFileNotFoundMessage_whenRunHandleFileNotFoundExceptionMethod(){
