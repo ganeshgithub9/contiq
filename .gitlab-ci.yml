@@ -27,7 +27,17 @@ build:
   stage: test
   script:
 #    - until curl -s elasticsearch:9200 | grep -q "You Know, for Search"; do echo "Waiting for Elasticsearch..."; sleep 5; done
-    - curl elasticsearch:9200
+#    - curl elasticsearch:9200
+    - echo "Waiting for Elasticsearch..."
+    - |
+    - for i in {1..10}; do
+    - if curl -s http://elasticsearch:9200 | grep -q "You Know, for Search"; then
+    - echo "Elasticsearch is up"
+    - break
+    - fi
+    - echo "Waiting for Elasticsearch..."
+    - sleep 5
+    - done
     - mvn clean install
   artifacts:
     paths:
@@ -37,6 +47,16 @@ run_tests:
   stage: test
   script:
 #    - until curl -s elasticsearch:9200 | grep -q "You Know, for Search"; do echo "Waiting for Elasticsearch..."; sleep 5; done
+    - echo "Waiting for Elasticsearch..."
+    - |
+    - for i in {1..10}; do
+    - if curl -s http://elasticsearch:9200 | grep -q "You Know, for Search"; then
+    - echo "Elasticsearch is up"
+    - break
+    - fi
+    - echo "Waiting for Elasticsearch..."
+    - sleep 5
+    - done
     - mvn clean test
   artifacts:
     reports:
@@ -50,6 +70,16 @@ run_coverage:
   stage: test
   script:
 #    - until curl -s elasticsearch:9200 | grep -q "You Know, for Search"; do echo "Waiting for Elasticsearch..."; sleep 5; done
+    - echo "Waiting for Elasticsearch..."
+    - |
+    - for i in {1..10}; do
+    - if curl -s http://elasticsearch:9200 | grep -q "You Know, for Search"; then
+    - echo "Elasticsearch is up"
+    - break
+    - fi
+    - echo "Waiting for Elasticsearch..."
+    - sleep 5
+    - done
     - mvn jacoco:report
   artifacts:
     paths:
