@@ -16,8 +16,8 @@ externalDocs:
 servers:
   - url: https://contiq.ganesh.com/api/v1
 tags:
-  - name: FileUpload
-    description: Everything about File uploading
+  - name: File
+    description: Everything about Files
     externalDocs:
       description: Find out more
       url: http://swagger.io
@@ -26,24 +26,16 @@ tags:
   #   externalDocs:
   #     description: Find out more about our store
   #     url: http://swagger.io
-  - name: user
-    description: Operations about user
+  # - name: user
+  #   description: Operations about user
 paths:
-  /api/v1/users/{userId}/files:
+  /api/v1/files:
     post:
       tags:
-        - FileUpload
+        - File
       summary: Uploading new files
       description: Uploading new files into a user account
       operationId: uploadFiles
-      parameters:
-        - name: userId
-          in: path
-          description: ID of user
-          required: true
-          schema:
-            type: integer
-            format: int64
       requestBody:
         description: Attach files
         content:
@@ -60,6 +52,11 @@ paths:
       responses:
         '200':
           description: Files uploaded successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Files uploaded successfully'
           # content:
           #   application/json:
           #     schema:
@@ -71,6 +68,111 @@ paths:
           description: Unauthorized
         '404':
           description: User not found
+    get:
+      tags:
+        - File
+      summary: Fetch files
+      description: Fetch files uploaded by user id
+      operationId: fetchFiles
+      responses:
+        '200':
+          description: Fetched Files successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileMetaData'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /api/v1/files/{fileId}:
+    get:
+      tags:
+       - File
+      summary: Fetch files by id
+      parameters:
+        - name: fileId
+          in: path
+          description: ID of file
+          required: true
+          schema:
+            type: string
+            default: "file123"
+      responses:
+        '200':
+          description: Fetched File content successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'File content'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+
+  /api/v1/files/search:
+    get:
+      tags:
+       - File
+      summary: Search files having keyword
+      parameters:
+        - name: keyword
+          in: query
+          description: word to be searched
+          required: false
+          schema:
+            type: string
+            default: "content"
+      responses:
+        '200':
+          description: Fetched File content successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileMetaData'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /api/v1/files/{fileId}/search:
+    get:
+      tags:
+       - File
+      summary: Search paragraphs having keyword within in given file
+      parameters:
+        - name: fileId
+          in: path
+          description: ID of file
+          required: true
+          schema:
+            type: string
+            default: "file123"
+        - name: keyword
+          in: query
+          description: word to be searched
+          required: false
+          schema:
+            type: string
+            default: "content"
+      responses:
+        '200':
+          description: Fetched matched paragraphs within a given file successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Paragraph'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+
       # security:
       #   - petstore_auth:
       #       - write:pets
@@ -112,100 +214,100 @@ paths:
     #     - petstore_auth:
     #         - write:pets
     #         - read:pets
-  /api/v1/users/{userId}/files/duplicate-check:
-    post:
-      tags:
-        - FileUpload
-      summary: Duplicate file check
-      description: check if files with same name exists in user account
-      operationId: FilenameCheck
-      parameters:
-        - name: userId
-          in: path
-          description: ID of user
-          required: true
-          schema:
-            type: integer
-            format: int64
-            default: 1
-        # - name: files
-        #   in: query
-        #   description: List of files to check for duplicates
-        #   required: false
-        #   explode: true
-        #   schema:
-        #     type: array
-        #     items:
-        #       type: string
-        #     default: ['Company Agreement', 'Software Agreement']
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-              default: ['Company agreement', 'Software agreement']
-      responses:
-        '200':
-          description: successful duplicate check result
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DuplicateCheckResponse'
-            # application/xml:
-            #   schema:
-            #     type: array
-            #     items:
-            #       $ref: '#/components/schemas/Pet'
-        '401':
-          description: Unauthorized
-      # security:
-      #   - petstore_auth:
-      #       - write:pets
-      #       - read:pets
-  /api/v1/users/{userId}/files/{fileId}/replace:
-    get:
-      tags:
-        - FileUpload
-      summary: Replace existing file by a new file
-      description: Replace existing file with a new file
-      operationId: fileReplace
-      parameters:
-        - name: userId
-          in: path
-          description: ID of user
-          required: true
-          schema:
-            type: integer
-            format: int64
-            default: 1
-        - name: fileId
-          in: path
-          description: ID of file
-          required: true
-          schema:
-            type: integer
-            format: int64
-            default: 1
-      responses:
-        '200':
-          description: File replaced successfully
-          # content:
-          #   application/json:
-          #     schema:
-          #       type: array
-          #       items:
-          #         $ref: '#/components/schemas/Pet'
-          #   application/xml:
-          #     schema:
-          #       type: array
-          #       items:
-          #         $ref: '#/components/schemas/Pet'
-        '401':
-          description: Unauthorized
+  # /api/v1/users/{userId}/files/duplicate-check:
+  #   post:
+  #     tags:
+  #       - FileUpload
+  #     summary: Duplicate file check
+  #     description: check if files with same name exists in user account
+  #     operationId: FilenameCheck
+  #     parameters:
+  #       - name: userId
+  #         in: path
+  #         description: ID of user
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #           default: 1
+  #       # - name: files
+  #       #   in: query
+  #       #   description: List of files to check for duplicates
+  #       #   required: false
+  #       #   explode: true
+  #       #   schema:
+  #       #     type: array
+  #       #     items:
+  #       #       type: string
+  #       #     default: ['Company Agreement', 'Software Agreement']
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: array
+  #             items:
+  #               type: string
+  #             default: ['Company agreement', 'Software agreement']
+  #     responses:
+  #       '200':
+  #         description: successful duplicate check result
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/DuplicateCheckResponse'
+  #           # application/xml:
+  #           #   schema:
+  #           #     type: array
+  #           #     items:
+  #           #       $ref: '#/components/schemas/Pet'
+  #       '401':
+  #         description: Unauthorized
+  #     # security:
+  #     #   - petstore_auth:
+  #     #       - write:pets
+  #     #       - read:pets
+  # /api/v1/users/{userId}/files/{fileId}/replace:
+  #   get:
+  #     tags:
+  #       - FileUpload
+  #     summary: Replace existing file by a new file
+  #     description: Replace existing file with a new file
+  #     operationId: fileReplace
+  #     parameters:
+  #       - name: userId
+  #         in: path
+  #         description: ID of user
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #           default: 1
+  #       - name: fileId
+  #         in: path
+  #         description: ID of file
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #           default: 1
+  #     responses:
+  #       '200':
+  #         description: File replaced successfully
+  #         # content:
+  #         #   application/json:
+  #         #     schema:
+  #         #       type: array
+  #         #       items:
+  #         #         $ref: '#/components/schemas/Pet'
+  #         #   application/xml:
+  #         #     schema:
+  #         #       type: array
+  #         #       items:
+  #         #         $ref: '#/components/schemas/Pet'
+  #       '401':
+  #         description: Unauthorized
       # security:
       #   - petstore_auth:
       #       - write:pets
@@ -621,15 +723,43 @@ paths:
   #         description: User not found
 components:
   schemas:
-    DuplicateCheckResponse:
+    # DuplicateCheckResponse:
+    #   type: object
+    #   properties:
+    #     fileName:
+    #       type: string
+    #       example: 'Company Agreement'
+    #     isDuplicate:
+    #       type: boolean
+    #       example: false
+    FileMetaData:
       type: object
       properties:
-        fileName:
+        id:
           type: string
-          example: 'Company Agreement'
-        isDuplicate:
-          type: boolean
-          example: false
+          example: "acddb213"
+        name:
+          type: string
+          example: "file.pdf"
+    Paragraph:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "acddb213"
+        content:
+          type: string
+          example: "paragraph content"
+        fileId:
+          type: string
+          example: "file123"
+        paragraphNumber:
+          type: integer
+          example: 3
+        pageNumber:
+          type: integer
+          example: 2
+
     FileUpload:
       type: array
       items:
@@ -823,13 +953,3 @@ components:
   #           type: array
   #           items:
   #             $ref: '#/components/schemas/User'
-  # securitySchemes:
-  #   petstore_auth:
-  #     type: oauth2
-  #     flows:
-  #       implicit:
-  #         authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-  #         scopes:
-  #           write:pets: modify pets in y
-
-

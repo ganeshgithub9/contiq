@@ -2,40 +2,38 @@
 // Docs: https://dbml.dbdiagram.io/docs
 
 Table file {
-  id integer [primary key]
+  id varchar [primary key]
   name varchar
-  fileBLOB blob
-  author varchar
-  published_by varchar
-  uploaded_at timestamp
-  modified_at timestamp
-  belongs_to_user_id integer
-  type varchar
+  content varchar
+  userId varchar
 }
 
-Table user {
-  id integer [primary key]
-  name varchar
-  email_id varchar
-  password varchar
+// Table user {
+//   id integer [primary key]
+//   name varchar
+//   email_id varchar
+//   password varchar
 
-  auth0_id varchar
-  role string
-  last_login timestamp
-  created_at timestamp
-  updated_at timestamp
+//   auth0_id varchar
+//   role string
+//   last_login timestamp
+//   created_at timestamp
+//   updated_at timestamp
 
-}
+// }
 
 Table paragraph {
-  id integer [primary key]
-  file_id integer
+  id varchar [primary key]
+  file_id varchar
   page_number integer
-  paragraph_no_of_that_page integer
-  text text
+  paragraph_number integer
+  content text
 }
 
 
-Ref: user.id < file.belongs_to_user_id
+// Ref: user.id < file.belongs_to_user_id
 
 Ref: file.id < paragraph.file_id
+
+
+//Ref: "user"."role" < "user"."auth0_id"
