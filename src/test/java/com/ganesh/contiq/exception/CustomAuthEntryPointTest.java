@@ -1,5 +1,6 @@
 package com.ganesh.contiq.exception;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ganesh.contiq.exception.CustomAuthEntryPoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +19,7 @@ class CustomAuthEntryPointTest {
     @Test
     void shouldSetUnauthenticatedResponse_whenAuthenticationFails() throws Exception {
 
-        CustomAuthEntryPoint entryPoint = new CustomAuthEntryPoint();
+        CustomAuthEntryPoint entryPoint = new CustomAuthEntryPoint(new ObjectMapper());
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);

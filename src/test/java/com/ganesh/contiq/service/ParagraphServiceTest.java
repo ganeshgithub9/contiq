@@ -2,6 +2,7 @@ package com.ganesh.contiq.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ganesh.contiq.DTO.ParagraphListDTO;
 import com.ganesh.contiq.model.Paragraph;
 import com.ganesh.contiq.repository.ParagraphRepository;
 import com.ganesh.contiq.repository.ParagraphRepositoryCustom;
@@ -53,12 +54,14 @@ public class ParagraphServiceTest {
         Paragraph mockedParagraph=new Paragraph("1","Hello mate!",1,"fileId",1);
         List<Paragraph> mockedParagraphList=new ArrayList<>();
         mockedParagraphList.add(mockedParagraph);
+        ParagraphListDTO mockedParagraphListDTO=new ParagraphListDTO(mockedParagraphList);
+
 
         when(paragraphRepository.findParagraphsByFileIdAndKeyword(anyString(),anyString(),anyString())).thenReturn(mockedParagraphList);
 
-        List<Paragraph> paragraphList=paragraphService.getParagraphsByFileIdAndKeyword("fileId","Hello","userId");
+        ParagraphListDTO actualParagraphListDTO=paragraphService.getParagraphsByFileIdAndKeyword("fileId","Hello","userId");
 
-        String expectedResult=objectMapper.writeValueAsString(mockedParagraphList), actualResult=objectMapper.writeValueAsString(paragraphList);
+        String expectedResult=objectMapper.writeValueAsString(mockedParagraphListDTO), actualResult=objectMapper.writeValueAsString(actualParagraphListDTO);
         assertEquals(expectedResult,actualResult);
     }
 }

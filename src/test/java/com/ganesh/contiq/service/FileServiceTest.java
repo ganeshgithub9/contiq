@@ -1,7 +1,9 @@
 package com.ganesh.contiq.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ganesh.contiq.DTO.FileContentDTO;
 import com.ganesh.contiq.DTO.FileMetaDataDTO;
+import com.ganesh.contiq.DTO.FileMetaDataListDTO;
 import com.ganesh.contiq.model.File;
 import com.ganesh.contiq.model.Paragraph;
 import com.ganesh.contiq.repository.FileRepository;
@@ -109,13 +111,16 @@ public class FileServiceTest {
     public void shouldReturnFileContent_whenGetFileContentById() throws Exception {
 
         String content="Dummy PDF file content";
+        FileContentDTO fileContentDTO=new FileContentDTO(content);
+
+        String expectedResult=objectMapper.writeValueAsString(fileContentDTO);
 
         when(fileRepository.findContentById(anyString(),anyString())).thenReturn(content);
 
 
-        String actualContent=fileService.getFileContentById("fileId","userId");
-
-        assertEquals(content,actualContent);
+        FileContentDTO actualContent=fileService.getFileContentById("fileId","userId");
+        String actualResult=objectMapper.writeValueAsString(actualContent);
+        assertEquals(expectedResult,actualResult);
 
     }
 
@@ -129,11 +134,13 @@ public class FileServiceTest {
         newFile.setUserId("userId");
 
         List<File> mockedFileList=List.of(newFile);
-        List<FileMetaDataDTO> expectedResult=List.of(modelMapper.map(newFile,FileMetaDataDTO.class));
+        List<FileMetaDataDTO> expectedFileMetaDataList=List.of(modelMapper.map(newFile,FileMetaDataDTO.class));
+        FileMetaDataListDTO expectedResult=new FileMetaDataListDTO();
+        expectedResult.setFileList(expectedFileMetaDataList);
 
         when(fileRepository.findFilesByUserId(anyString())).thenReturn(mockedFileList);
 
-        List<FileMetaDataDTO> actualResult=fileService.getFilesByUserId("userId");
+        FileMetaDataListDTO actualResult=fileService.getFilesByUserId("userId");
 
         assertEquals(objectMapper.writeValueAsString(expectedResult),objectMapper.writeValueAsString(actualResult));
 
@@ -149,13 +156,15 @@ public class FileServiceTest {
         newFile.setUserId("userId");
 
         List<File> mockedFileList=List.of(newFile);
-        List<FileMetaDataDTO> expectedResult=List.of(modelMapper.map(newFile,FileMetaDataDTO.class));
+        List<FileMetaDataDTO> mockedFileMetaDataList=List.of(modelMapper.map(newFile,FileMetaDataDTO.class));
+        FileMetaDataListDTO expectedResult=new FileMetaDataListDTO();
+        expectedResult.setFileList(mockedFileMetaDataList);
 
         List<String> mockedFileIDList=List.of("fileId");
         when(fileRepository.findFileIdsByUserIdAndKeyword(anyString(),anyString())).thenReturn(mockedFileIDList);
         when(fileRepository.getFileMetaDataById(anyString())).thenReturn(newFile);
 
-        List<FileMetaDataDTO> actualResult=fileService.getFilesByUserIdAndKeyword("userId","file");
+        FileMetaDataListDTO actualResult=fileService.getFilesByUserIdAndKeyword("userId","file");
 
         assertEquals(objectMapper.writeValueAsString(expectedResult),objectMapper.writeValueAsString(actualResult));
 

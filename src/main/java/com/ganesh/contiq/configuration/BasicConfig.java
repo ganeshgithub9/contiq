@@ -1,6 +1,7 @@
 package com.ganesh.contiq.configuration;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ganesh.contiq.DTO.FileMetaDataDTO;
 import com.ganesh.contiq.model.File;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,11 @@ public class BasicConfig {
     @Bean
     public ElasticsearchOperations elasticsearchTemplate(ElasticsearchClient client) {
         return new ElasticsearchTemplate(client);
+    }
+
+    @Bean
+    public ObjectMapper getObjectMapper(){
+        return new ObjectMapper();
     }
 
 }

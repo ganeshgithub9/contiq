@@ -1,5 +1,6 @@
 package com.ganesh.contiq.controller;
 
+import com.ganesh.contiq.DTO.ParagraphListDTO;
 import com.ganesh.contiq.exception.FileAccessDeniedException;
 import com.ganesh.contiq.exception.FileNotFoundException;
 import com.ganesh.contiq.model.Paragraph;
@@ -26,7 +27,7 @@ public class ParagraphController {
     }
 
     @GetMapping("/files/{file-id}/search")
-    public ResponseEntity<List<Paragraph>> getParagraphsByFileIdAndKeyword(@PathVariable("file-id") String fileId, @RequestParam("keyword") String keyword, @AuthenticationPrincipal Jwt jwt) throws IOException, FileAccessDeniedException, FileNotFoundException {
+    public ResponseEntity<ParagraphListDTO> getParagraphsByFileIdAndKeyword(@PathVariable("file-id") String fileId, @RequestParam("keyword") String keyword, @AuthenticationPrincipal Jwt jwt) throws IOException, FileAccessDeniedException, FileNotFoundException {
         String userId= JwtUtil.getUserId(jwt);
         return new ResponseEntity<>(paragraphService.getParagraphsByFileIdAndKeyword(fileId,keyword,userId), HttpStatus.OK);
     }
