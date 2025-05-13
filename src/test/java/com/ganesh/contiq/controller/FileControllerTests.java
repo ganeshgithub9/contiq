@@ -2,7 +2,10 @@ package com.ganesh.contiq.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ganesh.contiq.DTO.FileContentDTO;
 import com.ganesh.contiq.DTO.FileMetaDataDTO;
+import com.ganesh.contiq.DTO.FileMetaDataListDTO;
+import com.ganesh.contiq.DTO.SuccessResponseDTO;
 import com.ganesh.contiq.exception.FileAccessDeniedException;
 import com.ganesh.contiq.service.CustomFileService;
 import com.ganesh.contiq.util.JwtUtil;
@@ -60,7 +63,8 @@ public class FileControllerTests {
     @Test
     public void shouldReturnSuccessMessage_whenUserUploadsFiles() throws Exception {
 
-        String expectedResult= "Files uploaded successfully";
+        SuccessResponseDTO expectedResponse= new SuccessResponseDTO("Files uploaded successfully");
+        String expectedResult=objectMapper.writeValueAsString(expectedResponse);
 
         List<MockMultipartFile> mockedmultipartFileList=List.of(new MockMultipartFile(
                 "files",
@@ -128,9 +132,12 @@ public class FileControllerTests {
     @Test
     public void shouldReturnFilesUploadedByUser_whenGetFiles() throws Exception {
 
-        List<FileMetaDataDTO> mockedResponse=new ArrayList<>();
-        mockedResponse.add(new FileMetaDataDTO("AB12","file1.pdf"));
-        mockedResponse.add(new FileMetaDataDTO("AB13","file2.pdf"));
+        List<FileMetaDataDTO> fileList=new ArrayList<>();
+        fileList.add(new FileMetaDataDTO("AB12","file1.pdf"));
+        fileList.add(new FileMetaDataDTO("AB13","file2.pdf"));
+
+        FileMetaDataListDTO mockedResponse=new FileMetaDataListDTO();
+        mockedResponse.setFileList(fileList);
 
         String expectedResult= objectMapper.writeValueAsString(mockedResponse);
 
@@ -157,10 +164,11 @@ public class FileControllerTests {
     public void shouldReturnFileContent_whenGetFileContentById() throws Exception {
 
         String mockedFileContent="This is a file content";
+        FileContentDTO mockedFileContentDTO=new FileContentDTO(mockedFileContent);
 
-        String expectedResult= mockedFileContent;
+        String expectedResult= objectMapper.writeValueAsString(mockedFileContentDTO);
 
-        when(fileService.getFileContentById(anyString(),anyString())).thenReturn(mockedFileContent);
+        when(fileService.getFileContentById(anyString(),anyString())).thenReturn(mockedFileContentDTO);
 
         try (MockedStatic<JwtUtil> mockedStatic = mockStatic(JwtUtil.class)) {
             mockedStatic.when(() -> JwtUtil.getUserId(any(Jwt.class))).thenReturn("user1");
@@ -248,9 +256,11 @@ public class FileControllerTests {
     @Test
     public void shouldReturnFiles_whenSearchFilesContainingGivenKeyword() throws Exception {
 
-        List<FileMetaDataDTO> mockedResponse=new ArrayList<>();
-        mockedResponse.add(new FileMetaDataDTO("AB12","file1HavingHelloKeyword.pdf"));
-        mockedResponse.add(new FileMetaDataDTO("AB13","file2HavingHelloKeyword.pdf"));
+        List<FileMetaDataDTO> fileList=new ArrayList<>();
+        fileList.add(new FileMetaDataDTO("AB12","file1HavingHelloKeyword.pdf"));
+        fileList.add(new FileMetaDataDTO("AB13","file2HavingHelloKeyword.pdf"));
+        FileMetaDataListDTO mockedResponse=new FileMetaDataListDTO();
+        mockedResponse.setFileList(fileList);
 
         String expectedResult= objectMapper.writeValueAsString(mockedResponse);
 

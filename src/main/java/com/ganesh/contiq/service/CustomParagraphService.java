@@ -1,5 +1,6 @@
 package com.ganesh.contiq.service;
 
+import com.ganesh.contiq.DTO.ParagraphListDTO;
 import com.ganesh.contiq.exception.FileAccessDeniedException;
 import com.ganesh.contiq.exception.FileNotFoundException;
 import com.ganesh.contiq.model.Paragraph;
@@ -26,7 +27,9 @@ public class CustomParagraphService implements ParagraphService{
     }
 
     @Override
-    public List<Paragraph> getParagraphsByFileIdAndKeyword(String fileId, String keyword, String userId) throws FileAccessDeniedException, FileNotFoundException {
-        return paragraphRepository.findParagraphsByFileIdAndKeyword(fileId,keyword,userId);
+    public ParagraphListDTO getParagraphsByFileIdAndKeyword(String fileId, String keyword, String userId) throws FileAccessDeniedException, FileNotFoundException {
+        List<Paragraph> paragraphList=paragraphRepository.findParagraphsByFileIdAndKeyword(fileId,keyword,userId);
+
+        return new ParagraphListDTO(paragraphList);
     }
 }

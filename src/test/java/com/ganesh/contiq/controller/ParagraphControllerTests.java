@@ -3,6 +3,7 @@ package com.ganesh.contiq.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ganesh.contiq.DTO.FileMetaDataDTO;
+import com.ganesh.contiq.DTO.ParagraphListDTO;
 import com.ganesh.contiq.model.Paragraph;
 import com.ganesh.contiq.service.CustomFileService;
 import com.ganesh.contiq.service.CustomParagraphService;
@@ -41,9 +42,10 @@ public class ParagraphControllerTests {
     @Test
     public void shouldReturnParagraphs_whenGetParagraphsByFileIdWithGivenKeyword() throws Exception {
 
-        List<Paragraph> mockedResponse=new ArrayList<>();
-        mockedResponse.add(new Paragraph("1","Hello mate!",3,"fileId1",4));
-        mockedResponse.add(new Paragraph("2","Hi! Hello mate!",1,"fileId1",6));
+        List<Paragraph> mockedParagraphList=new ArrayList<>();
+        mockedParagraphList.add(new Paragraph("1","Hello mate!",3,"fileId1",4));
+        mockedParagraphList.add(new Paragraph("2","Hi! Hello mate!",1,"fileId1",6));
+        ParagraphListDTO mockedResponse=new ParagraphListDTO(mockedParagraphList);
 
         String expectedResult= objectMapper.writeValueAsString(mockedResponse);
 

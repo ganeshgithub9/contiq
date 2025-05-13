@@ -1,6 +1,8 @@
 package com.ganesh.contiq.service;
 
+import com.ganesh.contiq.DTO.FileContentDTO;
 import com.ganesh.contiq.DTO.FileMetaDataDTO;
+import com.ganesh.contiq.DTO.FileMetaDataListDTO;
 import com.ganesh.contiq.exception.FileAccessDeniedException;
 import com.ganesh.contiq.exception.FileNotFoundException;
 import com.ganesh.contiq.model.File;
@@ -56,25 +58,35 @@ public class CustomFileService implements FileService{
     }
 
     @Override
-    public String getFileContentById(String fileId,String userId) throws FileNotFoundException, FileAccessDeniedException {
+    public FileContentDTO getFileContentById(String fileId, String userId) throws FileNotFoundException, FileAccessDeniedException {
 
-        return fileRepository.findContentById(fileId,userId);
+        String content= fileRepository.findContentById(fileId,userId);
+
+        return new FileContentDTO(content);
     }
 
     @Override
-    public List<FileMetaDataDTO> getFilesByUserId(String userId) {
-        return fileRepository.findFilesByUserId(userId).stream().map(file -> modelMapper.map(file, FileMetaDataDTO.class)).toList();
+    public FileMetaDataListDTO getFilesByUserId(String userId) {
+        List<FileMetaDataDTO> fileList=fileRepository.findFilesByUserId(userId).stream().map(file -> modelMapper.map(file, FileMetaDataDTO.class)).toList();
+
+        FileMetaDataListDTO fileMetaDataListDTO=new FileMetaDataListDTO();
+        fileMetaDataListDTO.setFileList(fileList);
+        return fileMetaDataListDTO;
     }
 
     @Override
-    public List<FileMetaDataDTO> getFilesByUserIdAndKeyword(String userId, String keyword) {
+    public FileMetaDataListDTO getFilesByUserIdAndKeyword(String userId, String keyword) {
         log.info("started getFilesByUserIdAndKeyword method with userId {} and keyword {}",userId,keyword);
         List<String> fileIDs=fileRepository.findFileIdsByUserIdAndKeyword(userId,keyword);
         for(String id:fileIDs)
             log.info("{}",id);
-        return fileIDs.stream()
+        List<FileMetaDataDTO> fileList= fileIDs.stream()
                 .map(fileId->fileRepository.getFileMetaDataById(fileId))
                 .map(file->modelMapper.map(file,FileMetaDataDTO.class))
                 .toList();
+
+        FileMetaDataListDTO fileMetaDataListDTO=new FileMetaDataListDTO();
+        fileMetaDataListDTO.setFileList(fileList);
+        return fileMetaDataListDTO;
     }
 }

@@ -1,5 +1,6 @@
 package com.ganesh.contiq.exception;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ public class CustomAccessDeniedHandlerTest {
     @Test
     void shouldSetUnauthorizedResponse_whenAuthorizationFails() throws Exception {
 
-        CustomAccessDeniedHandler accessDeniedHandler=new CustomAccessDeniedHandler();
+        CustomAccessDeniedHandler accessDeniedHandler=new CustomAccessDeniedHandler(new ObjectMapper());
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
